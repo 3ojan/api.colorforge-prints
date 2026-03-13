@@ -16,7 +16,6 @@ import express from "express";
 import cors from "cors";
 import multer from "multer";
 import Stripe from "stripe";
-import mysql from "mysql2/promise";
 
 const UPLOAD_DIR = path.join(__dirname, "uploads");
 if (!fs.existsSync(UPLOAD_DIR)) {
@@ -324,10 +323,6 @@ const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } }); // 1
 const {
   STRIPE_SECRET_KEY,
   STRIPE_WEBHOOK_SECRET,
-  DB_HOST = "localhost",
-  DB_USER,
-  DB_PASSWORD,
-  DB_NAME,
   CLIENT_ORIGIN = "http://localhost:8080",
   PORT = "4000",
 } = process.env;
@@ -420,22 +415,6 @@ app.post(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-let pool = null;
-if (DB_HOST && DB_USER && DB_NAME) {
-  try {
-    pool = await mysql.createPool({
-      host: DB_HOST,
-      user: DB_USER,
-      password: DB_PASSWORD,
-      database: DB_NAME,
-    });
-  } catch (err) {
-    console.warn("[API] MySQL pool failed (contact/orders will skip DB):", err.message);
-  }
-} else {
-  console.warn("[API] MySQL env vars not set; DB persistence disabled.");
-}
 
 // Map tier (colors) to price in cents
 const PRICE_BY_COLORS = {
@@ -530,18 +509,11 @@ app.post("/api/contact", upload.single("image"), async (req, res) => {
       });
     }
 
-    const imagePath = req.file ? "uploads/" + req.file.filename : null;
-    if (pool) {
-      try {
-        await pool.execute(
-          `INSERT INTO contact_submissions (name, email, question, image_path) VALUES (?, ?, ?, ?)`,
-          [name, email, question, imagePath]
-        );
-      } catch (dbErr) {
-        console.error("Contact DB insert failed (table may not exist):", dbErr);
-      }
+    if (req.file) {
+      const imagePath = "uploads/" + req.file.filename;
+      console.log("[Contact] Image saved:", imagePath);
     }
-
+    console.log("[Contact]", name, email, question?.slice(0, 50) + "...");
     return res.json({ success: true });
   } catch (err) {
     console.error(err);
