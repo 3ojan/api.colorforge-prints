@@ -1,0 +1,9 @@
+# Environment
+.env
+env.example
+env.test.example
+# Uploads
+uploads/
+
+# Stripe CLI cache
+.stripe-cli

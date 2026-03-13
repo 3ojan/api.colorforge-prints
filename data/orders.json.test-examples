@@ -1,0 +1,46 @@
+[
+  {
+    "idPoruke": "test-b2c-001",
+    "racunDateTime": "2025-03-10T12:00:00",
+    "brOznRac": "1",
+    "oznPosPr": "1",
+    "oznNapUr": "1",
+    "vatRate": 25,
+    "vatBase": 10,
+    "vatAmount": 2.5,
+    "totalGross": 12.5,
+    "invoiceNumberHuman": "F-TEST-B2C-001",
+    "itemDescription": "Paleta boja - ColorForge",
+    "fiscalStatus": "PENDING_RETRY"
+  },
+  {
+    "idPoruke": "test-b2b-001",
+    "racunDateTime": "2025-03-10T14:30:00",
+    "brOznRac": "2",
+    "oznPosPr": "1",
+    "oznNapUr": "1",
+    "vatRate": 25,
+    "vatBase": 40,
+    "vatAmount": 10,
+    "totalGross": 50,
+    "invoiceNumberHuman": "F-TEST-B2B-001",
+    "recipientOib": "50930104221",
+    "recipientName": "Test d.o.o.",
+    "itemDescription": "Usluga tiskanja",
+    "fiscalStatus": "PENDING_RETRY"
+  },
+  {
+    "idPoruke": "test-b2c-zerovat",
+    "racunDateTime": "2025-03-10T16:00:00",
+    "brOznRac": "3",
+    "oznPosPr": "1",
+    "oznNapUr": "1",
+    "vatRate": 0,
+    "vatBase": 29,
+    "vatAmount": 0,
+    "totalGross": 29,
+    "invoiceNumberHuman": "F-TEST-ZERO-001",
+    "itemDescription": "Usluga bez PDV-a",
+    "fiscalStatus": "PENDING_RETRY"
+  }
+]
