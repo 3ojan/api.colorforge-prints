@@ -423,14 +423,18 @@ app.use(express.urlencoded({ extended: true }));
 
 let pool = null;
 if (DB_HOST && DB_USER && DB_NAME) {
-  pool = await mysql.createPool({
-    host: DB_HOST,
-    user: DB_USER,
-    password: DB_PASSWORD,
-    database: DB_NAME,
-  });
+  try {
+    pool = await mysql.createPool({
+      host: DB_HOST,
+      user: DB_USER,
+      password: DB_PASSWORD,
+      database: DB_NAME,
+    });
+  } catch (err) {
+    console.warn("[API] MySQL pool failed (contact/orders will skip DB):", err.message);
+  }
 } else {
-  console.warn("MySQL env vars not set; DB persistence is disabled.");
+  console.warn("[API] MySQL env vars not set; DB persistence disabled.");
 }
 
 // Map tier (colors) to price in cents
