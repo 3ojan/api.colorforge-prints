@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "build": "echo 'No build step for Express'",
     "start": "node index.js",
     "stripe:webhook": "node scripts/stripe-webhook.js",
     "test:setup": "bash scripts/test-setup.sh",
