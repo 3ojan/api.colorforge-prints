@@ -332,16 +332,19 @@ const {
   PORT = "4000",
 } = process.env;
 
-if (!STRIPE_SECRET_KEY) {
-  console.error("[API] FATAL: Missing STRIPE_SECRET_KEY in environment. Set it in Hostinger Settings → Environment Variables.");
-  process.exit(1);
+let stripe = null;
+if (STRIPE_SECRET_KEY && STRIPE_SECRET_KEY.startsWith("sk_")) {
+  stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: "2024-11-20.acacia" });
+} else {
+  console.error("[API] STRIPE_SECRET_KEY missing or invalid (must start with sk_test_ or sk_live_). Set in Hostinger → Environment Variables.");
 }
 
-const stripe = new Stripe(STRIPE_SECRET_KEY, {
-  apiVersion: "2024-11-20.acacia",
-});
-
 const app = express();
+
+// Health check - responds before any heavy init
+app.get("/", (req, res) => {
+  res.json({ ok: true, message: "ColorForge API" });
+});
 
 app.use(
   cors({
@@ -354,6 +357,7 @@ app.post(
   "/api/webhooks/stripe",
   express.raw({ type: "application/json" }),
   async (req, res) => {
+    if (!stripe) return res.status(503).json({ error: "Stripe not configured" });
     const sig = req.headers["stripe-signature"];
     if (!STRIPE_WEBHOOK_SECRET || !sig) {
       return res.status(400).send("Webhook secret required");
@@ -441,6 +445,9 @@ app.post(
   "/api/create-checkout-session",
   upload.single("image"),
   async (req, res) => {
+    if (!stripe) {
+      return res.status(503).json({ error: "Stripe not configured. Set STRIPE_SECRET_KEY in environment." });
+    }
     try {
       const raw = req.body?.data ? JSON.parse(req.body.data) : req.body || {};
       const {
