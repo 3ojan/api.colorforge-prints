@@ -1,3 +1,4 @@
+console.log("[API] Node process starting...");
 import path from "path";
 import fs from "fs";
 import crypto from "crypto";
@@ -332,7 +333,7 @@ const {
 } = process.env;
 
 if (!STRIPE_SECRET_KEY) {
-  console.error("Missing STRIPE_SECRET_KEY in environment");
+  console.error("[API] FATAL: Missing STRIPE_SECRET_KEY in environment. Set it in Hostinger Settings → Environment Variables.");
   process.exit(1);
 }
 
@@ -549,8 +550,8 @@ app.post("/api/fiscal-preview", (req, res) => {
   }
 });
 
-const listenPort = PORT || 4000;
-app.listen(listenPort, () => {
-  console.log(`API server listening on http://localhost:${listenPort}`);
+const listenPort = process.env.PORT || PORT || 4000;
+app.listen(listenPort, "0.0.0.0", () => {
+  console.log(`[API] Server listening on port ${listenPort}`);
 });
 
